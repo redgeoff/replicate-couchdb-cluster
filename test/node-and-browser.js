@@ -1,7 +1,7 @@
 'use strict';
 
 var Promise = require('sporks/scripts/promise'),
-  Cluster = require('../scripts'),
+  Cluster = require('../scripts/cluster'),
   sporks = require('sporks'),
   Slouch = require('couch-slouch');
 

@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "A fault-tolerant way to replicate an entire CouchDB cluster",
   "main": "index.js",
+  "bin": {
+    "replicate-couchdb-cluster": "bin/cmd.js"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/redgeoff/replicate-couchdb-cluster"
@@ -56,6 +59,7 @@
   },
   "dependencies": {
     "couch-slouch": "0.0.3",
+    "minimist": "^1.2.0",
     "sporks": "0.0.1",
     "squadron": "0.0.3"
   }

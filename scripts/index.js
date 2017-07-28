@@ -1,3 +1,8 @@
 'use strict';
 
-module.exports = require('./cluster');
+var Cluster = require('./cluster');
+
+module.exports = function (params) {
+  var cluster = new Cluster(params);
+  return cluster.replicate();
+};
