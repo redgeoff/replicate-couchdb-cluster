@@ -8,6 +8,8 @@ var Slouch = require('couch-slouch'),
 //   target
 //   concurrency
 //   skip
+//   verbose
+//   useTargetAPI
 var Cluster = function (params) {
   this._params = params;
 
@@ -21,6 +23,12 @@ var Cluster = function (params) {
     // Create a throttler with the specified or default concurrency
     var concurrency = this._params.concurrency ? this._params.concurrency : null;
     this._throttler = new squadron.Throttler(concurrency);
+  }
+};
+
+Cluster.prototype._log = function (msg) {
+  if (this._params.verbose) {
+    console.log(new Date() + ': ' + msg);
   }
 };
 
@@ -50,7 +58,8 @@ Cluster.prototype._replicateSecurity = function (sourceDB, targetDB) {
 };
 
 Cluster.prototype._replicateRawDB = function (sourceDB, targetDB) {
-  return this._sourceSlouch.db.replicate({
+  var slouch = this._params.useTargetAPI ? this._targetSlouch : this._sourceSlouch;
+  return slouch.db.replicate({
     source: this._params.source + '/' + sourceDB,
     target: this._params.target + '/' + targetDB
   });
@@ -58,11 +67,14 @@ Cluster.prototype._replicateRawDB = function (sourceDB, targetDB) {
 
 Cluster.prototype._replicateDB = function (sourceDB, targetDB) {
   var self = this;
+  self._log('beginning replication of ' + sourceDB + '...');
   return self._createDBIfMissing(targetDB).then(function () {
     // Replicate security first so that security is put in place before data is copied over
     return self._replicateSecurity(sourceDB, targetDB);
   }).then(function () {
     return self._replicateRawDB(sourceDB, targetDB);
+  }).then(function () {
+    self._log('finished replicating ' + sourceDB);
   });
 };
 
