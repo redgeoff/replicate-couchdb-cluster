@@ -8,6 +8,7 @@ var Slouch = require('couch-slouch'),
 //   target
 //   concurrency
 //   skip
+//   verbose
 var Cluster = function (params) {
   this._params = params;
 
@@ -21,6 +22,12 @@ var Cluster = function (params) {
     // Create a throttler with the specified or default concurrency
     var concurrency = this._params.concurrency ? this._params.concurrency : null;
     this._throttler = new squadron.Throttler(concurrency);
+  }
+};
+
+Cluster.prototype._log = function (msg) {
+  if (this._params.verbose) {
+    console.log(new Date() + ': ' + msg);
   }
 };
 
@@ -58,6 +65,7 @@ Cluster.prototype._replicateRawDB = function (sourceDB, targetDB) {
 
 Cluster.prototype._replicateDB = function (sourceDB, targetDB) {
   var self = this;
+  self._log('replicating ' + sourceDB);
   return self._createDBIfMissing(targetDB).then(function () {
     // Replicate security first so that security is put in place before data is copied over
     return self._replicateSecurity(sourceDB, targetDB);
