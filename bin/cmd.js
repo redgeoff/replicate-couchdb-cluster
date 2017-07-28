@@ -6,7 +6,7 @@ var replicate = require('../scripts'),
   argv = require('minimist')(process.argv.slice(2));
 
 if (!argv.s || !argv.t) {
-  console.log('Usage: replicate-couchdb-cluster -s source -t target [ -c concurrency ] [ -i dbs-to-skip ] [ -v ]');
+  console.log('Usage: replicate-couchdb-cluster -s source -t target [ -c concurrency ] [ -i dbs-to-skip ] [ -v ] [ -a ]');
 } else {
   var skip = undefined;
   if (argv.i) {
@@ -18,7 +18,8 @@ if (!argv.s || !argv.t) {
     target: argv.t,
     concurrency: argv.c,
     skip: skip,
-    verbose: argv.v ? true : false
+    verbose: argv.v ? true : false,
+    useTargetAPI: argv.u ? true : false
   }).catch(function (err) {
     console.error('Fatal Error:', err.message);
     process.exit(1);
