@@ -65,6 +65,7 @@ Example:
 
 ```js
 var replicate = require('replicate-couchdb-cluster');
+
 replicate({
   source: https://admin1:secrect1@example1.com:6984,
   target: https://admin2:secrect2@example2.com:6984,
