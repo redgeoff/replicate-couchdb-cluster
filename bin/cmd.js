@@ -3,12 +3,17 @@
 'use strict';
 
 var replicate = require('../scripts'),
-  argv = require('minimist')(process.argv.slice(2));
+  argv = require('minimist')(process.argv.slice(2)),
+  fs = require('fs');
 
 if (!argv.s || !argv.t) {
-  console.log('Usage: replicate-couchdb-cluster -s source -t target [ -c concurrency ] [ -i dbs-to-skip ] [ -v ] [ -a ]');
+  return fs.createReadStream(__dirname + '/usage.txt')
+    .pipe(process.stdout)
+    .on('close', function () {
+      process.exit(1);
+    });
 } else {
-  var skip = undefined;
+  var skip = null;
   if (argv.i) {
     skip = argv.i.split(',');
   }
@@ -19,7 +24,7 @@ if (!argv.s || !argv.t) {
     concurrency: argv.c,
     skip: skip,
     verbose: argv.v ? true : false,
-    useTargetAPI: argv.u ? true : false
+    useTargetAPI: argv.a ? true : false
   }).catch(function (err) {
     console.error('Fatal Error:', err.message);
     process.exit(1);

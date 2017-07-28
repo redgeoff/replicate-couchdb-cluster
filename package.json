@@ -22,9 +22,9 @@
     "url": "https://github.com/redgeoff/replicate-couchdb-cluster/issues"
   },
   "scripts": {
-    "assert-beautified": "beautify-proj -i test -c beautify.json && beautify-proj -i scripts -c beautify.json",
-    "beautify": "beautify-proj -i test -o . -c beautify.json && beautify-proj -i scripts -o . -c beautify.json",
-    "jshint": "jshint -c .jshintrc test scripts",
+    "assert-beautified": "beautify-proj -i test -c beautify.json && beautify-proj -i scripts -c beautify.json && beautify-proj -i bin -c beautify.json",
+    "beautify": "beautify-proj -i test -o . -c beautify.json && beautify-proj -i scripts -o . -c beautify.json && beautify-proj -i bin -o . -c beautify.json",
+    "jshint": "jshint -c .jshintrc test scripts bin",
     "node-test": "istanbul test --dir cache/coverage/node node_modules/mocha/bin/_mocha test/node.js",
     "node-full-test": "npm run node-test --coverage && istanbul check-coverage --lines 100 --function 100 --statements 100 --branches 100",
     "browser-server": "node_modules/gofur/scripts/browser/serve.js -c cache -t test/browser.js",
