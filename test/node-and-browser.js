@@ -11,7 +11,8 @@ describe('node and browser', function () {
     id = 0,
     cluster = null,
     replicatedDBs = null,
-    differentCluster = false;
+    differentCluster = false,
+    consoleLog = null;
 
   var data = {
     db1: {
@@ -169,11 +170,15 @@ describe('node and browser', function () {
 
     differentCluster = false;
 
+    consoleLog = console.log;
+
     return createData();
   });
 
   afterEach(function () {
-    return destroyData();
+    return destroyData().then(function () {
+      console.log = consoleLog;
+    });
   });
 
   it('should replicate', function () {
@@ -220,6 +225,30 @@ describe('node and browser', function () {
     return replicate({
       source: 'http://admin:admin@localhost:5984',
       target: 'http://admin:admin@localhost:5984'
+    });
+  });
+
+  it('should replicate with targets api', function () {
+    return replicate({
+      source: 'http://admin:admin@localhost:5984',
+      target: 'http://admin:admin@localhost:5984',
+      useTargetAPI: true
+    });
+  });
+
+  it('should log when verbose on', function () {
+    // Mock
+    var msg = null;
+    console.log = function (_msg) {
+      msg = _msg;
+    };
+
+    return replicate({
+      source: 'http://admin:admin@localhost:5984',
+      target: 'http://admin:admin@localhost:5984',
+      verbose: true
+    }).then(function () {
+      (msg === null).should.eql(false);
     });
   });
 
