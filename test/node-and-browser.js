@@ -8,8 +8,9 @@ var Promise = require('sporks/scripts/promise'),
 describe('node and browser', function () {
 
   var slouch = null,
-    id = 0,
-    cluster = null;
+    id = 0;
+
+  // TODO: also need to test security
 
   var data = {
     test_db1: [{
