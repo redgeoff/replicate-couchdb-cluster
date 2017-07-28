@@ -4,6 +4,37 @@ var chai = require('chai');
 chai.use(require('chai-as-promised'));
 chai.should();
 
+var path = require('path'),
+  spawn = require('child_process').spawn;
+
 require('./node-and-browser');
 
-// TODO: use spawn to test CL interface
+describe('node', function () {
+
+  // The test sometimes takes longer than the default of 2 secs
+  this.timeout(4000);
+
+  it('should work via command line', function (done) {
+
+    var options = [
+      '-s', 'http://admin:admin@localhost:5984',
+      '-t', 'http://admin:admin@localhost:5984'
+    ];
+
+    var child = spawn(path.join(__dirname, '/../bin/cmd.js'), options);
+
+    child.stderr.on('data', function (data) {
+      throw new Error('should not get data on stderr');
+    });
+
+    child.on('error', function (err) {
+      throw err;
+    });
+
+    child.on('close', function (code) {
+      done();
+    });
+
+  });
+
+});
