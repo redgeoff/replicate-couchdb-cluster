@@ -10,10 +10,11 @@ describe('node and browser', function () {
   var slouch = null,
     id = 0,
     cluster = null,
-    replicatedDBs = null;
+    replicatedDBs = null,
+    differentCluster = false;
 
   var data = {
-    test_db1: {
+    db1: {
       security: {
         admins: {
           names: ['joe', 'phil'],
@@ -34,7 +35,7 @@ describe('node and browser', function () {
         }
       ]
     },
-    test_db2: {
+    db2: {
       docs: [{
           _id: '3',
           foo: 'star'
@@ -49,7 +50,12 @@ describe('node and browser', function () {
 
   var uniqueName = function (dbName) {
     // Use a unique id as back to back creation/deletion of the same DBs can lead to problems
-    return dbName + '_' + id;
+    return 'test_' + id + '_' + dbName;
+  };
+
+  var otherClusterName = function (dbName) {
+    // Simulate replicating to a different cluster by appending a suffix to the DB name
+    return dbName + '_diff_cluster';
   };
 
   var createDocs = function (db, docs) {
@@ -79,11 +85,11 @@ describe('node and browser', function () {
   };
 
   var destroyData = function () {
-    var promises = [];
-    sporks.each(data, function (data, db) {
-      promises.push(slouch.db.destroy(uniqueName(db)));
+    return slouch.db.all().each(function (db) {
+      if (isTestDB(db)) {
+        return slouch.db.destroy(db);
+      }
     });
-    return Promise.all(promises);
   };
 
   var docsShouldEql = function (db, docs) {
@@ -118,9 +124,15 @@ describe('node and browser', function () {
   var dataShouldEql = function () {
     var promises = [];
     sporks.each(data, function (data, db) {
-      promises.push(dbDataShouldEql(uniqueName(db), data));
+      db = uniqueName(db);
+      db = differentCluster ? otherClusterName(db) : db;
+      promises.push(dbDataShouldEql(db, data));
     });
     return Promise.all(promises);
+  };
+
+  var isTestDB = function (db) {
+    return db.indexOf('test_' + id) !== -1;
   };
 
   var replicate = function (params) {
@@ -128,11 +140,19 @@ describe('node and browser', function () {
 
     // Spy
     var _replicateDB = cluster._replicateDB;
-    cluster._replicateDB = function (db) {
-      if (db.indexOf('test_db') !== -1) {
-        replicatedDBs.push(db);
+    cluster._replicateDB = function (sourceDB /*, targetDB */ ) {
+      var args = sporks.toArgsArray(arguments);
+
+      if (isTestDB(sourceDB)) {
+        replicatedDBs.push(sourceDB);
+
+        if (differentCluster) {
+          // Fake a different cluster by changing the target DB names
+          args[1] = otherClusterName(sourceDB);
+        }
       }
-      return _replicateDB.apply(this, arguments);
+
+      return _replicateDB.apply(this, args);
     };
 
     return cluster.replicate().then(function () {
@@ -143,9 +163,11 @@ describe('node and browser', function () {
   beforeEach(function () {
     slouch = new Slouch('http://admin:admin@localhost:5984');
 
-    id++;
+    id = (new Date()).getTime();
 
     replicatedDBs = [];
+
+    differentCluster = false;
 
     return createData();
   });
@@ -159,7 +181,7 @@ describe('node and browser', function () {
       source: 'http://admin:admin@localhost:5984',
       target: 'http://admin:admin@localhost:5984'
     }).then(function () {
-      replicatedDBs.should.eql([uniqueName('test_db1'), uniqueName('test_db2')]);
+      replicatedDBs.should.eql([uniqueName('db1'), uniqueName('db2')]);
     });
   });
 
@@ -167,17 +189,38 @@ describe('node and browser', function () {
     return replicate({
       source: 'http://admin:admin@localhost:5984',
       target: 'http://admin:admin@localhost:5984',
-      skip: [uniqueName('test_db2')]
+      skip: [uniqueName('db2')]
     }).then(function () {
-      replicatedDBs.should.eql([uniqueName('test_db1')]);
+      replicatedDBs.should.eql([uniqueName('db1')]);
     });
   });
 
-  // it('should support custom concurrency when replicating', function () {
-  //
-  // });
+  it('should support custom concurrency when replicating', function () {
+    return replicate({
+      source: 'http://admin:admin@localhost:5984',
+      target: 'http://admin:admin@localhost:5984',
+      concurrency: 10
+    }).then(function () {
+      replicatedDBs.should.eql([uniqueName('db1'), uniqueName('db2')]);
+    });
+  });
 
-  // it('should replicate to different database', function () {
-  // });
+  it('should support synchronization when replicating', function () {
+    return replicate({
+      source: 'http://admin:admin@localhost:5984',
+      target: 'http://admin:admin@localhost:5984',
+      concurrency: 1
+    }).then(function () {
+      replicatedDBs.should.eql([uniqueName('db1'), uniqueName('db2')]);
+    });
+  });
+
+  it('should replicate to a different cluster', function () {
+    differentCluster = true;
+    return replicate({
+      source: 'http://admin:admin@localhost:5984',
+      target: 'http://admin:admin@localhost:5984'
+    });
+  });
 
 });
