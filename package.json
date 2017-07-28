@@ -55,6 +55,8 @@
     ]
   },
   "dependencies": {
-    "sporks": "0.0.1"
+    "couch-slouch": "0.0.3",
+    "sporks": "0.0.1",
+    "squadron": "0.0.3"
   }
 }
