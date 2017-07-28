@@ -27,7 +27,9 @@ var Cluster = function (params) {
 Cluster.prototype.replicate = function () {
   var self = this;
   return self._sourceSlouch.db.all().each(function (db) {
-    return self._replicateDB(db);
+    if (!self._params.skip || self._params.skip.indexOf(db) === -1) {
+      return self._replicateDB(db);
+    }
   }, self._throttler);
 };
 

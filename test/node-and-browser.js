@@ -8,7 +8,9 @@ var Promise = require('sporks/scripts/promise'),
 describe('node and browser', function () {
 
   var slouch = null,
-    id = 0;
+    id = 0,
+    cluster = null,
+    replicatedDBs = null;
 
   var data = {
     test_db1: {
@@ -45,6 +47,11 @@ describe('node and browser', function () {
     }
   };
 
+  var uniqueName = function (dbName) {
+    // Use a unique id as back to back creation/deletion of the same DBs can lead to problems
+    return dbName + '_' + id;
+  };
+
   var createDocs = function (db, docs) {
     var promises = [];
     docs.forEach(function (doc) {
@@ -66,7 +73,7 @@ describe('node and browser', function () {
   var createData = function () {
     var promises = [];
     sporks.each(data, function (data, db) {
-      promises.push(createDatabase(db + '_' + id, data));
+      promises.push(createDatabase(uniqueName(db), data));
     });
     return Promise.all(promises);
   };
@@ -74,14 +81,16 @@ describe('node and browser', function () {
   var destroyData = function () {
     var promises = [];
     sporks.each(data, function (data, db) {
-      promises.push(slouch.db.destroy(db + '_' + id));
+      promises.push(slouch.db.destroy(uniqueName(db)));
     });
     return Promise.all(promises);
   };
 
   var docsShouldEql = function (db, docs) {
     var savedDocs = {};
-    return slouch.doc.all(db, { include_docs: true }).each(function (item) {
+    return slouch.doc.all(db, {
+      include_docs: true
+    }).each(function (item) {
       // Delete _rev as not important for comparison
       delete item.doc._rev;
       savedDocs[item.doc._id] = item.doc;
@@ -109,16 +118,34 @@ describe('node and browser', function () {
   var dataShouldEql = function () {
     var promises = [];
     sporks.each(data, function (data, db) {
-      promises.push(dbDataShouldEql(db + '_' + id, data));
+      promises.push(dbDataShouldEql(uniqueName(db), data));
     });
     return Promise.all(promises);
+  };
+
+  var replicate = function (params) {
+    cluster = new Cluster(params);
+
+    // Spy
+    var _replicateDB = cluster._replicateDB;
+    cluster._replicateDB = function (db) {
+      if (db.indexOf('test_db') !== -1) {
+        replicatedDBs.push(db);
+      }
+      return _replicateDB.apply(this, arguments);
+    };
+
+    return cluster.replicate().then(function () {
+      return dataShouldEql();
+    });
   };
 
   beforeEach(function () {
     slouch = new Slouch('http://admin:admin@localhost:5984');
 
-    // Use a unique id as back to back creation/deletion of the same DBs can lead to problems
     id++;
+
+    replicatedDBs = [];
 
     return createData();
   });
@@ -128,26 +155,29 @@ describe('node and browser', function () {
   });
 
   it('should replicate', function () {
-    var cluster = new Cluster({
+    return replicate({
       source: 'http://admin:admin@localhost:5984',
       target: 'http://admin:admin@localhost:5984'
-    });
-    return cluster.replicate().then(function () {
-      return dataShouldEql();
+    }).then(function () {
+      replicatedDBs.should.eql([uniqueName('test_db1'), uniqueName('test_db2')]);
     });
   });
 
-  // it('should skip when replicating', function () {
-  //   var cluster = new Cluster({
-  //     source: 'http://admin:admin@localhost:5984',
-  //     target: 'http://admin:admin@localhost:5984',
-  //     skip: ['_global_changes', '_replicator', '_users']
-  //   });
-  //   return cluster.replicate();
-  // });
+  it('should skip when replicating', function () {
+    return replicate({
+      source: 'http://admin:admin@localhost:5984',
+      target: 'http://admin:admin@localhost:5984',
+      skip: [uniqueName('test_db2')]
+    }).then(function () {
+      replicatedDBs.should.eql([uniqueName('test_db1')]);
+    });
+  });
 
   // it('should support custom concurrency when replicating', function () {
   //
+  // });
+
+  // it('should replicate to different database', function () {
   // });
 
 });
