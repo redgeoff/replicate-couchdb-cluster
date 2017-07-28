@@ -23,7 +23,7 @@ describe('node', function () {
 
     var child = spawn(path.join(__dirname, '/../bin/cmd.js'), options);
 
-    child.stderr.on('data', function (data) {
+    child.stderr.on('data', function ( /* data */ ) {
       throw new Error('should not get data on stderr');
     });
 
@@ -32,7 +32,11 @@ describe('node', function () {
     });
 
     child.on('close', function (code) {
-      done();
+      if (code > 0) {
+        throw new Error('non-zero code');
+      } else {
+        done();
+      }
     });
 
   });
