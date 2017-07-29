@@ -121,7 +121,7 @@ You may be wondering why you would need such a tool when CouchDB 2 automatically
 
 * We feel it is much safer to have a separate backup of our data in case something happens to our data, e.g. we accidentally delete data, there is a hacking attempt, etc...
 * Sometimes you want to replicate a cluster to a different region of the world. (The built-in clustering in CouchDB 2 isn't designed to be used across different regions of the world)
-* In rare cases, we have found that CouchDB sometimes corrupts database files.
+* In rare cases, we have found that CouchDB sometimes corrupts database files and in these rare cases, we've had to restore data from our backups.
 
 
 ## [Testing](TESTING.md)
