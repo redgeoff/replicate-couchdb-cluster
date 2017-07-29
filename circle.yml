@@ -43,4 +43,4 @@ test:
     - nvm use 8.1.4 && npm run browser-coverage-full-test
 
     # Test docker image
-    - docker run -it -e SOURCE="http://admin:admin@$HOST_IP:5984" -e TARGET="http://admin:admin@$HOST_IP:5984" -e SKIP="_users,_replicator" -e CONCURRENCY=10 -e USE_TARGET_API=1 -e VERBOSE=true -e redgeoff/replicate-couchdb-cluster
+    - docker run -it -e SOURCE="http://admin:admin@$HOST_IP:5984" -e TARGET="http://admin:admin@$HOST_IP:5984" -e SKIP="_users,_replicator" -e CONCURRENCY=10 -e USE_TARGET_API=1 -e VERBOSE=true redgeoff/replicate-couchdb-cluster
