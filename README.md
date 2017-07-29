@@ -115,3 +115,5 @@ replicate({
 ```
 
 ## [Testing](TESTING.md)
+
+## [Building](BUILDING.md)
