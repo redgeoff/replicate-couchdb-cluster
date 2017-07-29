@@ -88,7 +88,7 @@ All options:
         -e RUN_EVERY_SECS=3600 \
         -e CONCURRENCY=10 \
         -e SKIP="_users,_replicator" \
-        -e USE_TARGET_API="1" \
+        -e USE_TARGET_API=1 \
         -e VERBOSE=true \
         redgeoff/replicate-couchdb-cluster
 
