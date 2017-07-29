@@ -57,6 +57,42 @@ A fault-tolerant way to replicate an entire CouchDB cluster
                                     -t http://localhost:5984
                                     -a
 
+## In a docker container
+
+This can be useful for scheduling a reoccurring backup.
+
+Run the replication in the foreground:
+
+    $ docker run -it \
+        -e SOURCE="https://admin1:secrect1@example1.com:6984" \
+        -e TARGET="https://admin2:secrect2@example2.com:6984" \
+        redgeoff/replicate-couchdb-cluster
+
+Replicate every hour in the background. This will persist through server reboots:
+
+    $ docker run -d --name replicate-couchdb-cluster \
+        --restart always \
+        -e SOURCE="https://admin1:secrect1@example1.com:6984" \
+        -e TARGET="https://admin2:secrect2@example2.com:6984" \
+        -e RUN_EVERY_SECS=3600 \
+        redgeoff/replicate-couchdb-cluster
+
+Note: if the replication takes longer than RUN_EVERY_SECS, it will result to running the replications back to back. You can use `RUN_EVERY_SECS=0` if you always want the replication to run continuously.
+
+All options:
+
+    $ docker run -d --name replicate-couchdb-cluster \
+        --restart always
+        -e SOURCE="https://admin1:secrect1@example1.com:6984" \
+        -e TARGET="https://admin2:secrect2@example2.com:6984" \
+        -e RUN_EVERY_SECS=3600 \
+        -e CONCURRENCY=10 \
+        -e SKIP="_users,_replicator" \
+        -e USE_TARGET_API=1 \
+        -e VERBOSE=true \
+        redgeoff/replicate-couchdb-cluster
+
+
 ## API
 
 You can also use the API.
@@ -78,4 +114,17 @@ replicate({
 });
 ```
 
+
+## Why?
+
+You may be wondering why you would need such a tool when CouchDB 2 automatically replicates data between nodes:
+
+* We feel it is much safer to have a separate backup of our data in case something happens to our data, e.g. we accidentally delete data, there is a hacking attempt, etc...
+* Sometimes you want to replicate a cluster to a different region of the world. (The built-in clustering in CouchDB 2 isn't designed to be used across different regions of the world)
+* In rare cases, we have found that CouchDB sometimes corrupts database files.
+
+
 ## [Testing](TESTING.md)
+
+
+## [Building](BUILDING.md)
