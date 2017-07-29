@@ -22,7 +22,7 @@ fi
 
 loop=true
 
-while [ $loop ]; do
+while [ "$loop" = "true" ]; do
 
   before=`date +"%s"`
 
