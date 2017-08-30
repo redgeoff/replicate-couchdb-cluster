@@ -17,7 +17,7 @@ A fault-tolerant way to replicate an entire CouchDB cluster
       -s source           The URL for the CouchDB cluster from which we will be
                           replicating
 
-      -s target           The URL for the CouchDB cluster to which we will be
+      -t target           The URL for the CouchDB cluster to which we will be
                           replicating
 
     Options:
