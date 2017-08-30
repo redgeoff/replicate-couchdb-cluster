@@ -4,7 +4,7 @@ Usage: replicate-couchdb-cluster -s source -t target options
   -s source           The URL for the CouchDB cluster from which we will be
                       replicating
 
-  -s target           The URL for the CouchDB cluster to which we will be
+  -t target           The URL for the CouchDB cluster to which we will be
                       replicating
 
 Options:
