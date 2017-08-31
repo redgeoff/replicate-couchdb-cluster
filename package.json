@@ -58,7 +58,7 @@
     ]
   },
   "dependencies": {
-    "couch-slouch": "^0.0.4",
+    "couch-slouch": "^0.0.5",
     "minimist": "^1.2.0",
     "sporks": "^0.0.1",
     "squadron": "^0.0.3"
