@@ -78,6 +78,16 @@ Replicate every hour in the background. This will persist through server reboots
         -e VERBOSE=true \
         redgeoff/replicate-couchdb-cluster
 
+Replicate every day at 23:00 UTC (11 PM). This will persist through server reboots:
+
+    $ docker run -d --name replicate-couchdb-cluster \
+        --restart always \
+        -e SOURCE="https://admin1:secrect1@example1.com:6984" \
+        -e TARGET="https://admin2:secrect2@example2.com:6984" \
+        -e RUN_AT="23:00" \
+        -e VERBOSE=true \
+        redgeoff/replicate-couchdb-cluster
+
 Notes:
 - If the replication takes longer than RUN_EVERY_SECS, it will result to running the replications back to back. You can use `RUN_EVERY_SECS=0` if you always want the replication to run continuously.
 - You can view the output at `/var/lib/docker/containers/<container id>/<container id>-json.log`
@@ -88,12 +98,15 @@ All options:
         --restart always
         -e SOURCE="https://admin1:secrect1@example1.com:6984" \
         -e TARGET="https://admin2:secrect2@example2.com:6984" \
+        -e RUN_AT="HH:MM" \
         -e RUN_EVERY_SECS=3600 \
         -e CONCURRENCY=10 \
         -e SKIP="_users,_replicator" \
         -e USE_TARGET_API=1 \
         -e VERBOSE=true \
         redgeoff/replicate-couchdb-cluster
+
+Note: The RUN_AT and RUN_EVERY_SECS options cannot be used simultaneously. RUN_AT will always take precedence over RUN_EVERY_SECS.
 
 
 ## API
