@@ -75,9 +75,12 @@ Replicate every hour in the background. This will persist through server reboots
         -e SOURCE="https://admin1:secrect1@example1.com:6984" \
         -e TARGET="https://admin2:secrect2@example2.com:6984" \
         -e RUN_EVERY_SECS=3600 \
+        -e VERBOSE=true \
         redgeoff/replicate-couchdb-cluster
 
-Note: if the replication takes longer than RUN_EVERY_SECS, it will result to running the replications back to back. You can use `RUN_EVERY_SECS=0` if you always want the replication to run continuously.
+Notes:
+- If the replication takes longer than RUN_EVERY_SECS, it will result to running the replications back to back. You can use `RUN_EVERY_SECS=0` if you always want the replication to run continuously.
+- You can view the output at `/var/lib/docker/containers/<container id>/<container id>-json.log`
 
 All options:
 
