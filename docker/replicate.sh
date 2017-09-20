@@ -20,17 +20,49 @@ if [ "$RUN_EVERY_SECS" != "" ]; then
   continuous=1
 fi
 
+# When RUN_AT is specified, we need to sleep and then replicate
+if [ "$RUN_AT" != "" ]; then
+  skip=true
+else
+  skip=false
+fi
+
 loop=true
 
 while [ "$loop" = "true" ]; do
 
   before=`date +"%s"`
 
-  /usr/local/bin/replicate-couchdb-cluster -s $SOURCE -t $TARGET $CONCURRENY $SKIP $USE_TARGET_API $VERBOSE
+  if [ "$skip" = "false" ]; then
+    /usr/local/bin/replicate-couchdb-cluster -s $SOURCE -t $TARGET $CONCURRENY $SKIP $USE_TARGET_API $VERBOSE
+  fi
 
   after=`date +"%s"`
 
-  if [ "$continuous" == "1" ]; then
+  if [ "$RUN_AT" != "" ]; then
+
+    # Calculate the time until the next run
+
+    day=`date +%Y-%m-%d`
+    runAtSecs=`date --date="$day $RUN_AT" +"%s"`
+
+    timeLeft=`expr $runAtSecs - $after`
+
+    # Has the time for today already passed?
+    if [ $timeLeft -lt 0 ]; then
+      # Calculate the seconds until time tomorrow
+      timeLeft=`expr $timeLeft + 86400`
+    fi
+
+    if [ "$VERBOSE" != "" ]; then
+      echo `date`": sleeping until $RUN_AT ($timeLeft seconds)..."
+    fi
+    sleep $timeLeft
+
+    skip=false
+
+  elif [ "$continuous" == "1" ]; then
+
     duration=`expr $after - $before`
 
     # Do we need to sleep?
