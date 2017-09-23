@@ -12,7 +12,7 @@ require('./node-and-browser');
 describe('node', function () {
 
   // The test sometimes takes longer than the default of 2 secs
-  this.timeout(4000);
+  this.timeout(20000);
 
   it('should work via command line', function (done) {
 
