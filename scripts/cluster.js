@@ -28,9 +28,7 @@ var Cluster = function (params) {
     this._throttler = new squadron.Throttler(concurrency);
   }
 
-  if (this._params.debug) {
-    EnhancedRequest.LOG_EVERYTHING = true;
-  }
+  EnhancedRequest.LOG_EVERYTHING = this._params.debug;
 };
 
 Cluster.prototype._log = function (msg) {
