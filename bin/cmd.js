@@ -24,7 +24,8 @@ if (!argv.s || !argv.t) {
     concurrency: argv.c,
     skip: skip,
     verbose: argv.v ? true : false,
-    useTargetAPI: argv.a ? true : false
+    useTargetAPI: argv.a ? true : false,
+    debug: argv.d ? true : false
   }).catch(function (err) {
     console.error('Fatal Error:', err.message);
     process.exit(1);

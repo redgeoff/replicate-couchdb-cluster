@@ -22,6 +22,9 @@ Options:
 
   -v                  Verbose
 
+  -d                  Debug info such as details of the requests and responses.
+                      Useful for determining why long replications are failing.
+
 Examples:
 
   Replicate all DBs on example1.com to example2.com:
