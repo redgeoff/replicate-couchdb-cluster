@@ -14,6 +14,7 @@ describe('node and browser', function () {
     id = 0,
     cluster = null,
     replicatedDBs = null,
+    securitiesSet = null,
     differentCluster = false,
     consoleLog = null;
 
@@ -159,6 +160,16 @@ describe('node and browser', function () {
       return _replicateDB.apply(this, args);
     };
 
+    // Spy
+    var set = cluster._targetSlouch.security.set;
+    cluster._targetSlouch.security.set = function (db, security) {
+      securitiesSet.push({
+        db: db,
+        security: security
+      });
+      return set.apply(this, arguments);
+    };
+
     return cluster.replicate().then(function () {
       return dataShouldEql();
     });
@@ -170,6 +181,8 @@ describe('node and browser', function () {
     id = (new Date()).getTime();
 
     replicatedDBs = [];
+
+    securitiesSet = [];
 
     differentCluster = false;
 
@@ -228,6 +241,9 @@ describe('node and browser', function () {
     return replicate({
       source: 'http://admin:admin@localhost:5984',
       target: 'http://admin:admin@localhost:5984'
+    }).then(function () {
+      // Sanity check to make sure spy is working for later tests
+      securitiesSet.length.should.eql(1);
     });
   });
 
@@ -252,6 +268,15 @@ describe('node and browser', function () {
       verbose: true
     }).then(function () {
       (msg === null).should.eql(false);
+    });
+  });
+
+  it('should not replicate security when it is identical', function () {
+    return replicate({
+      source: 'http://admin:admin@localhost:5984',
+      target: 'http://admin:admin@localhost:5984'
+    }).then(function () {
+      securitiesSet.length.should.eql(0);
     });
   });
 

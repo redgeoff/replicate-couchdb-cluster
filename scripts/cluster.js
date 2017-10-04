@@ -1,7 +1,8 @@
 'use strict';
 
 var Slouch = require('couch-slouch'),
-  squadron = require('squadron');
+  squadron = require('squadron'),
+  sporks = require('sporks');
 
 // params
 //   source
@@ -52,8 +53,17 @@ Cluster.prototype._createDBIfMissing = function (db) {
 
 Cluster.prototype._replicateSecurity = function (sourceDB, targetDB) {
   var self = this;
-  return self._sourceSlouch.security.get(sourceDB).then(function (security) {
-    return self._targetSlouch.security.set(targetDB, security);
+
+  // Get the security from the source
+  return self._sourceSlouch.security.get(sourceDB).then(function (sourceSecurity) {
+    // Get the security from the target
+    return self._targetSlouch.security.get(targetDB).then(function (targetSecurity) {
+      // Is the security different?
+      if (!sporks.isEqual(sourceSecurity, targetSecurity)) {
+        // Update the target security
+        return self._targetSlouch.security.set(targetDB, sourceSecurity);
+      }
+    });
   });
 };
 
