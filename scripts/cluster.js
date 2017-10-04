@@ -1,16 +1,18 @@
 'use strict';
 
 var Slouch = require('couch-slouch'),
+  EnhancedRequest = require('couch-slouch/scripts/enhanced-request'),
   squadron = require('squadron'),
   sporks = require('sporks');
 
-// params
+// params:
 //   source
 //   target
 //   concurrency
 //   skip
 //   verbose
 //   useTargetAPI
+//   debug
 var Cluster = function (params) {
   this._params = params;
 
@@ -25,6 +27,8 @@ var Cluster = function (params) {
     var concurrency = this._params.concurrency ? this._params.concurrency : null;
     this._throttler = new squadron.Throttler(concurrency);
   }
+
+  EnhancedRequest.LOG_EVERYTHING = this._params.debug;
 };
 
 Cluster.prototype._log = function (msg) {

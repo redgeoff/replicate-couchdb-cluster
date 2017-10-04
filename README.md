@@ -35,6 +35,9 @@ A fault-tolerant way to replicate an entire CouchDB cluster
 
       -v                  Verbose
 
+      -d                  Debug info such as details of the requests and responses.
+                          Useful for determining why long replications are failing.
+
     Examples:
 
       Replicate all DBs on example1.com to example2.com:
@@ -104,6 +107,7 @@ All options:
         -e SKIP="_users,_replicator" \
         -e USE_TARGET_API=1 \
         -e VERBOSE=true \
+        -e DEBUG=true \
         redgeoff/replicate-couchdb-cluster
 
 Note: The RUN_AT and RUN_EVERY_SECS options cannot be used simultaneously. RUN_AT will always take precedence over RUN_EVERY_SECS.
@@ -124,7 +128,8 @@ replicate({
   concurrency: 10,
   skip: ['_users', '_replicator'],
   verbose: true,
-  useTargetAPI: true
+  useTargetAPI: true,
+  debug: true
 }).then(function () {
   // Replication done
 });
