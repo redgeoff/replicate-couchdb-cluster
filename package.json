@@ -61,6 +61,6 @@
     "couch-slouch": "^0.1.5",
     "minimist": "^1.2.0",
     "sporks": "^0.0.3",
-    "squadron": "^0.0.3"
+    "squadron": "^0.0.4"
   }
 }
