@@ -5,7 +5,8 @@ chai.use(require('chai-as-promised'));
 chai.should();
 
 var path = require('path'),
-  spawn = require('child_process').spawn;
+  spawn = require('child_process').spawn,
+  utils = require('./utils');
 
 require('./node-and-browser');
 
@@ -17,8 +18,8 @@ describe('node', function () {
   it('should work via command line', function (done) {
 
     var options = [
-      '-s', 'http://admin:admin@localhost:5984',
-      '-t', 'http://admin:admin@localhost:5984'
+      '-s', utils.couchDBURL(),
+      '-t', utils.couchDBURL()
     ];
 
     var child = spawn(path.join(__dirname, '/../bin/cmd.js'), options);

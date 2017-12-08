@@ -2,8 +2,10 @@
 
 var Promise = require('sporks/scripts/promise'),
   Cluster = require('../scripts/cluster'),
+  replicateCouchDBCluster = require('../scripts'),
   sporks = require('sporks'),
-  Slouch = require('couch-slouch');
+  Slouch = require('couch-slouch'),
+  utils = require('./utils');
 
 describe('node and browser', function () {
 
@@ -176,7 +178,7 @@ describe('node and browser', function () {
   };
 
   beforeEach(function () {
-    slouch = new Slouch('http://admin:admin@localhost:5984');
+    slouch = new Slouch(utils.couchDBURL());
 
     id = (new Date()).getTime();
 
@@ -199,17 +201,25 @@ describe('node and browser', function () {
 
   it('should replicate', function () {
     return replicate({
-      source: 'http://admin:admin@localhost:5984',
-      target: 'http://admin:admin@localhost:5984'
+      source: utils.couchDBURL(),
+      target: utils.couchDBURL()
     }).then(function () {
       replicatedDBs.should.eql([uniqueName('db1'), uniqueName('db2')]);
     });
   });
 
+  it('should replicate with main index', function () {
+    // Sanity test
+    return replicateCouchDBCluster({
+      source: utils.couchDBURL(),
+      target: utils.couchDBURL()
+    });
+  });
+
   it('should skip when replicating', function () {
     return replicate({
-      source: 'http://admin:admin@localhost:5984',
-      target: 'http://admin:admin@localhost:5984',
+      source: utils.couchDBURL(),
+      target: utils.couchDBURL(),
       skip: [uniqueName('db2')]
     }).then(function () {
       replicatedDBs.should.eql([uniqueName('db1')]);
@@ -218,8 +228,8 @@ describe('node and browser', function () {
 
   it('should support custom concurrency when replicating', function () {
     return replicate({
-      source: 'http://admin:admin@localhost:5984',
-      target: 'http://admin:admin@localhost:5984',
+      source: utils.couchDBURL(),
+      target: utils.couchDBURL(),
       concurrency: 10
     }).then(function () {
       replicatedDBs.should.eql([uniqueName('db1'), uniqueName('db2')]);
@@ -228,8 +238,8 @@ describe('node and browser', function () {
 
   it('should support synchronization when replicating', function () {
     return replicate({
-      source: 'http://admin:admin@localhost:5984',
-      target: 'http://admin:admin@localhost:5984',
+      source: utils.couchDBURL(),
+      target: utils.couchDBURL(),
       concurrency: 1
     }).then(function () {
       replicatedDBs.should.eql([uniqueName('db1'), uniqueName('db2')]);
@@ -239,8 +249,8 @@ describe('node and browser', function () {
   it('should replicate to a different cluster', function () {
     differentCluster = true;
     return replicate({
-      source: 'http://admin:admin@localhost:5984',
-      target: 'http://admin:admin@localhost:5984'
+      source: utils.couchDBURL(),
+      target: utils.couchDBURL()
     }).then(function () {
       // Sanity check to make sure spy is working for later tests
       securitiesSet.length.should.eql(1);
@@ -249,8 +259,8 @@ describe('node and browser', function () {
 
   it('should replicate with targets api', function () {
     return replicate({
-      source: 'http://admin:admin@localhost:5984',
-      target: 'http://admin:admin@localhost:5984',
+      source: utils.couchDBURL(),
+      target: utils.couchDBURL(),
       useTargetAPI: true
     });
   });
@@ -263,8 +273,8 @@ describe('node and browser', function () {
     };
 
     return replicate({
-      source: 'http://admin:admin@localhost:5984',
-      target: 'http://admin:admin@localhost:5984',
+      source: utils.couchDBURL(),
+      target: utils.couchDBURL(),
       verbose: true
     }).then(function () {
       (msg === null).should.eql(false);
@@ -273,8 +283,8 @@ describe('node and browser', function () {
 
   it('should not replicate security when it is identical', function () {
     return replicate({
-      source: 'http://admin:admin@localhost:5984',
-      target: 'http://admin:admin@localhost:5984'
+      source: utils.couchDBURL(),
+      target: utils.couchDBURL()
     }).then(function () {
       securitiesSet.length.should.eql(0);
     });
