@@ -1,4 +1,48 @@
-# Testing
+## Set up dev enviornment
+
+### Option A: Automated setup via Vagrant
+
+This option will automatically install an isolated dev env that you can destroy or rebuild at any point.
+
+- Install Vagrant (http://www.vagrantup.com) and VirtualBox (https://www.virtualbox.org)
+- $ git clone https://github.com/redgeoff/node-couchdb-vagrant.git
+- $ cd node-couchdb-vagrant
+- $ vagrant up
+- $ vagrant ssh
+- $ git clone https://github.com/redgeoff/slouch
+- $ cd slouch
+- $ npm install
+- $ npm run test
+
+### Option B: Running CouchDB in Docker
+
+Install CouchDB locally. You can easily run CouchDB via docker with:
+
+    $ ./run-couchdb-docker.sh
+
+Notes:
+- If you are not running ubuntu, you will probably have to configure the `common` variable
+- If you are running the tests against a CouchDB instance on another box then you will need to enable CORs, e.g. ./enable-cors.sh and you will also need to change the `host` entry in test/spec/config.json
+
+### Option C: Install CouchDB manually
+
+- Visit http://couchdb.apache.org and install CouchDB
+- Make sure to create the missing system DBs: _users, _global_changes, _replicators, e.g. see [run-couchdb-docker.sh](https://github.com/redgeoff/slouch/blob/master/run-couchdb-docker.sh#L22)
+- Make sure to set the admin username to _admin_ and the admin password to _admin_
+
+## Resetting the DB
+
+If your DB accumulates a lot of junk data and you want to clear it, you can do so with:
+
+    $ npm run reset-db
+
+Warning: this will delete all your databases!
+
+
+## Beautify
+
+We use [beautify-proj](https://github.com/delta-db/beautify-proj) to beautify all of our code. This helps us to keep our coding style standardized. If the `assert-beautified` test fails then you'll want to run `npm run beautify` and then commit the changes.
+
 
 ## Test in node
 
