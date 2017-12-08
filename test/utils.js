@@ -1,7 +1,6 @@
 'use strict';
 
-var config = require('./config.json'),
-  Slouch = require('../scripts');
+var config = require('./config.json');
 
 var Utils = function () {};
 
