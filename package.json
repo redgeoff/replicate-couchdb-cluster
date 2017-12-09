@@ -1,6 +1,6 @@
 {
   "name": "replicate-couchdb-cluster",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "A fault-tolerant way to replicate an entire CouchDB cluster",
   "main": "index.js",
   "bin": {
