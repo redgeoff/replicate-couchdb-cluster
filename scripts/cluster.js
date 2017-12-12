@@ -75,11 +75,9 @@ Cluster.prototype._replicateSecurity = function (sourceDB, targetDB) {
 
 Cluster.prototype._replicateRawDB = function (sourceDB, targetDB) {
   var slouch = this._params.useTargetAPI ? this._targetSlouch : this._sourceSlouch;
-  this._sourceDB = sourceDB;
-  this._targetDB = targetDB;
   return slouch.db.replicate({
-    source: this._params.source + '/' + this._sourceDB,
-    target: this._params.target + '/' + this._targetDB
+    source: this._params.source + '/' + sourceDB,
+    target: this._params.target + '/' + targetDB
   });
 };
 
