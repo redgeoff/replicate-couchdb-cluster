@@ -176,7 +176,6 @@ describe('node and browser', function () {
       return dataShouldEql();
     });
   };
-
   beforeEach(function () {
     slouch = new Slouch(utils.couchDBURL());
 
@@ -189,6 +188,8 @@ describe('node and browser', function () {
     differentCluster = false;
 
     consoleLog = console.log;
+
+
 
     return createData();
   });
@@ -289,5 +290,4 @@ describe('node and browser', function () {
       securitiesSet.length.should.eql(0);
     });
   });
-
 });

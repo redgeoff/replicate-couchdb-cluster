@@ -18,6 +18,8 @@ var Cluster = function (params) {
 
   this._sourceSlouch = new Slouch(params.source);
   this._targetSlouch = new Slouch(params.target);
+  this._sourceDB = "";
+  this._targetDB = "";
 
   if (this._params.concurrency === 1) {
     // Don't use a throttler
@@ -73,23 +75,28 @@ Cluster.prototype._replicateSecurity = function (sourceDB, targetDB) {
 
 Cluster.prototype._replicateRawDB = function (sourceDB, targetDB) {
   var slouch = this._params.useTargetAPI ? this._targetSlouch : this._sourceSlouch;
+  this._sourceDB = sourceDB;
+  this._targetDB = targetDB;
   return slouch.db.replicate({
-    source: this._params.source + '/' + sourceDB,
-    target: this._params.target + '/' + targetDB
+    source: this._params.source + '/' + this._sourceDB,
+    target: this._params.target + '/' + this._targetDB
   });
 };
 
 Cluster.prototype._replicateDB = function (sourceDB, targetDB) {
   var self = this;
-  self._log('beginning replication of ' + sourceDB + '...');
-  return self._createDBIfMissing(targetDB).then(function () {
-    // Replicate security first so that security is put in place before data is copied over
-    return self._replicateSecurity(sourceDB, targetDB);
-  }).then(function () {
-    return self._replicateRawDB(sourceDB, targetDB);
-  }).then(function () {
-    self._log('finished replicating ' + sourceDB);
-  });
+  /* istanbul ignore else */
+  if (self._targetSlouch.db.exists(sourceDB)) {
+    self._log('beginning replication of ' + sourceDB + '...');
+    return self._createDBIfMissing(targetDB).then(function () {
+      // Replicate security first so that security is put in place before data is copied over
+      return self._replicateSecurity(sourceDB, targetDB);
+    }).then(function () {
+      return self._replicateRawDB(sourceDB, targetDB);
+    }).then(function () {
+      self._log('finished replicating ' + sourceDB);
+    });
+  }
 };
 
 module.exports = Cluster;
