@@ -18,8 +18,6 @@ var Cluster = function (params) {
 
   this._sourceSlouch = new Slouch(params.source);
   this._targetSlouch = new Slouch(params.target);
-  this._sourceDB = "";
-  this._targetDB = "";
 
   if (this._params.concurrency === 1) {
     // Don't use a throttler
