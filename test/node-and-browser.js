@@ -7,6 +7,7 @@ var Promise = require('sporks/scripts/promise'),
   Slouch = require('couch-slouch'),
   utils = require('./utils');
 
+var expect = require('chai').expect;
 describe('node and browser', function () {
 
   // Need to extend timeout for when running on CI
@@ -189,8 +190,6 @@ describe('node and browser', function () {
 
     consoleLog = console.log;
 
-
-
     return createData();
   });
 
@@ -290,4 +289,9 @@ describe('node and browser', function () {
       securitiesSet.length.should.eql(0);
     });
   });
+
+  it('should check that the database still exists before calling replicate', function () {
+    return expect(cluster._replicateDB("aaa", "db1"));
+  });
+
 });
