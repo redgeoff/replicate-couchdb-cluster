@@ -79,7 +79,7 @@ Cluster.prototype._replicateRawDB = function (sourceDB, targetDB) {
   });
 };
 
-Cluster.prototype._replicateDB = function (sourceDB, targetDB) {
+Cluster.prototype._createAndReplicateDB = function (sourceDB, targetDB) {
   var self = this;
   self._log('beginning replication of ' + sourceDB + '...');
   return self._createDBIfMissing(targetDB).then(function () {
@@ -88,8 +88,20 @@ Cluster.prototype._replicateDB = function (sourceDB, targetDB) {
   }).then(function () {
     return self._replicateRawDB(sourceDB, targetDB);
   }).then(function () {
-    self._log('finished replicating ' + sourceDB);
+    return self._log('finished replicating ' + sourceDB);
   });
+};
+
+Cluster.prototype._replicateDB = function (sourceDB, targetDB) {
+  var self = this;
+  return this._sourceSlouch.db.exists(sourceDB)
+    .then(function (value) {
+      if (value === true) {
+        return self._createAndReplicateDB(sourceDB, targetDB);
+      } else {
+        self._log('Database does not exist, skipped replication. Database: ', sourceDB);
+      }
+    });
 };
 
 module.exports = Cluster;

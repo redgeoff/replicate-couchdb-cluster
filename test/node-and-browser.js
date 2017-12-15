@@ -290,4 +290,15 @@ describe('node and browser', function () {
     });
   });
 
+  it('should check that the database still exists before calling replicate', function () {
+    var createAndReplicatedDB = false;
+    cluster._createAndReplicateDB = function () {
+      createAndReplicatedDB = true;
+    };
+
+    return cluster._replicateDB('aaa', 'db1').then(function () {
+      createAndReplicatedDB.should.eql(false);
+    });
+  });
+
 });
