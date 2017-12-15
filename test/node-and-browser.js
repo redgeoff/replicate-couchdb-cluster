@@ -176,6 +176,7 @@ describe('node and browser', function () {
       return dataShouldEql();
     });
   };
+
   beforeEach(function () {
     slouch = new Slouch(utils.couchDBURL());
 
@@ -290,13 +291,13 @@ describe('node and browser', function () {
   });
 
   it('should check that the database still exists before calling replicate', function () {
-    var createdAndReplicatedDB = false;
+    var createAndReplicatedDB = false;
     cluster._createAndReplicateDB = function () {
-      createdAndReplicatedDB = true;
+      createAndReplicatedDB = true;
     };
 
     return cluster._replicateDB('aaa', 'db1').then(function () {
-      createdAndReplicatedDB.should.eql(false);
+      createAndReplicatedDB.should.eql(false);
     });
   });
 
