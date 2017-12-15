@@ -7,7 +7,6 @@ var Promise = require('sporks/scripts/promise'),
   Slouch = require('couch-slouch'),
   utils = require('./utils');
 
-var expect = require('chai').expect;
 describe('node and browser', function () {
 
   // Need to extend timeout for when running on CI
@@ -291,7 +290,14 @@ describe('node and browser', function () {
   });
 
   it('should check that the database still exists before calling replicate', function () {
-    return expect(cluster._replicateDB("aaa", "db1"));
+    var createdAndReplicatedDB = false;
+    cluster._createAndReplicateDB = function () {
+      createdAndReplicatedDB = true;
+    };
+
+    return cluster._replicateDB('aaa', 'db1').then(function () {
+      createdAndReplicatedDB.should.eql(false);
+    });
   });
 
 });
