@@ -10,7 +10,7 @@ var Promise = require('sporks/scripts/promise'),
 describe('node and browser', function () {
 
   // Need to extend timeout for when running on CI
-  this.timeout(20000);
+  this.timeout(30000);
 
   var slouch = null,
     id = 0,
