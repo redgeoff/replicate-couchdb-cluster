@@ -290,4 +290,30 @@ describe('node and browser', function () {
     });
   });
 
+  it('should check that the database still exists before calling replicate', function () {
+    cluster = new Cluster({
+      source: utils.couchDBURL(),
+      target: utils.couchDBURL()
+    });
+
+    var createAndReplicatedDB = false;
+    cluster._createAndReplicateDB = function () {
+      createAndReplicatedDB = true;
+    };
+
+    // Perform replication when DBs exist to ensure that spy is working
+    return cluster._replicateDB('db1', 'db1').then(function () {
+      createAndReplicatedDB.should.eql(false);
+
+      // Reset the spy flag
+      createAndReplicatedDB = false;
+    }).then(function () {
+      // Attempt to replicate from a DB that no longer exists
+      return cluster._replicateDB('aaa', 'db1');
+    }).then(function () {
+      // Make sure we didn't try to actually replicate
+      createAndReplicatedDB.should.eql(false);
+    });
+  });
+
 });
