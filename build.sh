@@ -11,6 +11,7 @@
 # Change to script directory
 cd `dirname $0`
 sd=`pwd`
+projRoot=$sd
 
 version=$1
 
@@ -21,7 +22,7 @@ fi
 
 # Set package version. Note: -e option required for OSX
 # (https://stackoverflow.com/a/19457213/2831606)
-sed -i '' -e "s/\"version\": \"[^\"]*\"/\"version\": \"${version}\"/g" $sd/../package.json
+sed -i '' -e "s/\"version\": \"[^\"]*\"/\"version\": \"${version}\"/g" $projRoot/package.json
 
 # Commit to master
 git add -A
@@ -33,12 +34,12 @@ git tag -a v${version} -m "${version}"
 git push origin --tags
 
 # Publish to npm
-cd $sd/..
+cd $projRoot
 npm publish
 
 # Build and push new docker images. We use the no-cache option as we want the latest package on npm
 # to be used
-cd $sd/../docker
+cd $projRoot/docker
 docker build --no-cache -t redgeoff/replicate-couchdb-cluster:${version} .
 docker tag redgeoff/replicate-couchdb-cluster:${version} redgeoff/replicate-couchdb-cluster:latest
 docker push redgeoff/replicate-couchdb-cluster:${version}
