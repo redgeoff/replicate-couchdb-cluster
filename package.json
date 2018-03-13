@@ -31,7 +31,6 @@
     "browser-test": "node_modules/gofur/scripts/browser/test.js -c cache -t test/browser.js",
     "browser-test-firefox": "node_modules/gofur/scripts/browser/test.js -c cache -t test/browser.js -b selenium:firefox",
     "browser-test-chrome": "node_modules/gofur/scripts/browser/test.js -c cache -t test/browser.js -b selenium:chrome",
-    "browser-test-phantomjs": "node_modules/gofur/scripts/browser/test.js -c cache -t test/browser.js -b selenium:phantomjs",
     "browser-coverage-server": "node_modules/gofur/scripts/browser-coverage/serve.js -c cache -t test/browser.js",
     "browser-coverage-test": "node_modules/gofur/scripts/browser-coverage/test.js -c cache -t test/browser.js",
     "browser-coverage-report": "istanbul report --dir cache/coverage/browser --root cache/coverage/browser lcov",
@@ -46,11 +45,11 @@
     "beautify-proj": "^1.0.0",
     "chai": "^4.1.0",
     "chai-as-promised": "^6.0.0",
-    "gofur": "^1.0.0",
+    "gofur": "^1.1.0",
     "istanbul": "^0.4.5",
     "jshint": "^2.9.4",
-    "mocha": "^5.0.0",
-    "request": "^2.81.0"
+    "mocha": "^5.0.4",
+    "request": "^2.85.0"
   },
   "greenkeeper": {
     "ignore": [
@@ -58,7 +57,7 @@
     ]
   },
   "dependencies": {
-    "couch-slouch": "^1.0.0",
+    "couch-slouch": "^1.0.4",
     "minimist": "^1.2.0",
     "sporks": "^1.0.0",
     "squadron": "^0.0.4"
