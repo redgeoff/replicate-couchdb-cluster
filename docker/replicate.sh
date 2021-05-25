@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$CONCURRENCY" != "" ]; then
-  CONCURRENY="-c $CONCURRENY"
+  CONCURRENCY="-c $CONCURRENCY"
 fi
 
 if [ "$SKIP" != "" ]; then
