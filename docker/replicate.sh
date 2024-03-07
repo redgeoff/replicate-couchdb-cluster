@@ -38,7 +38,7 @@ while [ "$loop" = "true" ]; do
   before=`date +"%s"`
 
   if [ "$skip" = "false" ]; then
-    /usr/local/bin/replicate-couchdb-cluster -s $SOURCE -t $TARGET $CONCURRENY $SKIP $USE_TARGET_API $VERBOSE $DEBUG
+    /usr/local/bin/replicate-couchdb-cluster -s $SOURCE -t $TARGET $CONCURRENCY $SKIP $USE_TARGET_API $VERBOSE $DEBUG
   fi
 
   after=`date +"%s"`
